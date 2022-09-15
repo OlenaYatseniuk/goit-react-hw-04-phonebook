@@ -1,0 +1,28 @@
+.form{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.label:not(:last-child){
+  margin-right: 40px;
+  text-transform: uppercase;
+}
+
+.input{
+  margin-left: 20px;
+}
+
+.submit{
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid;
+  cursor: pointer;
+  scale: 1;
+}
+
+.submit:hover{
+  scale: 1.1;
+  background-color:rgb(51, 172, 51);
+  color: beige;
+}

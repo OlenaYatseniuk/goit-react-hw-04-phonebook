@@ -1,0 +1,29 @@
+.item{
+margin-bottom: 15px;
+/* display: flex;
+justify-content: start; */
+}
+
+.spanName{
+  margin-right: 15px;
+  font-weight: 500;
+  font-style: italic;
+}
+
+.spanTel{
+  margin-right: 15px;
+}
+
+.button{
+  padding: 5px 10px;
+  border-radius: 5px;
+  border: 1px solid;
+  cursor: pointer;
+  scale: 1;
+}
+
+.button:hover{
+  scale: 1.1;
+  background-color:rgb(212, 66, 46);
+  color: beige;
+}
