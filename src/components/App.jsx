@@ -1,4 +1,5 @@
-import { Component } from 'react';
+import { useState, useEffect } from 'react';
+
 import ContactForm from './ContactForm';
 import ContactsList from './ContactsList';
 import Container from './Container';
@@ -10,88 +11,78 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const LOCALE_STORAGE_KEY = 'contacts';
 
-export class App extends Component {
-  state = {
-    contacts: [],
-    name: '',
-    filter: '',
-  };
+export function App() {
+  const [contacts, setContacts] = useState(() => getLocaleStorage() ?? []);
 
-  componentDidMount(){
-    if(localStorage.getItem(LOCALE_STORAGE_KEY)){
-      const localContacts = JSON.parse( localStorage.getItem(LOCALE_STORAGE_KEY));
-      this.setState({
-        contacts: localContacts,
-      })
-    }
+  const [filter, setFilter] = useState('');
+
+  function getLocaleStorage() {
+    return JSON.parse(localStorage.getItem(LOCALE_STORAGE_KEY));
   }
 
-  componentDidUpdate(prevProps, prevState){
-    if(prevState.contacts !== this.state.contacts){
-      localStorage.setItem(LOCALE_STORAGE_KEY, JSON.stringify(this.state.contacts))
-    }
-  }
+  useEffect(() => {
+    localStorage.setItem(LOCALE_STORAGE_KEY, JSON.stringify(contacts));
+  }, [contacts]);
 
-  handleSubmitForm = newContact => {
-    const {contacts} = this.state;
-
-    if(contacts.find(({name})=> name.toLowerCase() === newContact.name.toLowerCase())){
+  const handleSubmitForm = newContact => {
+    if (
+      contacts.find(
+        ({ name }) => name.toLowerCase() === newContact.name.toLowerCase()
+      )
+    ) {
       toast.error(`${newContact.name} is already in your contacts list`);
       return;
     }
 
-    if(!LOCALE_STORAGE_KEY){
-      localStorage.setItem()
+    if (!LOCALE_STORAGE_KEY) {
+      localStorage.setItem(LOCALE_STORAGE_KEY, JSON.stringify(newContact));
     }
 
-    this.setState(({contacts}) => {
-      return({
-        contacts: [...contacts, newContact],
-      })
+    setContacts(prev => {
+      return [...prev, newContact];
     });
   };
 
-  handleFilterInput = event => {
-    const {value} = event.target;
-    this.setState({
-      filter: value,
-    })
-
+  const handleFilterInput = event => {
+    const { value } = event.target;
+    setFilter(value);
   };
 
-  handleDeleteContact = (deleteId) => {
-    this.setState(({contacts}) =>{
-      return {contacts: contacts.filter(({id}) =>(deleteId !== id))}
-    })
-  }
+  const handleDeleteContact = deleteId => {
+    setContacts(prev => {
+      return [...prev.filter(({ id }) => deleteId !== id)];
+    });
+  };
 
-  render() {
-    const {filter, contacts} =this.state;
-    const identicFilter = filter.toLowerCase();
-    const filteredContacts = contacts.filter(({name}) => (name.toLowerCase().includes(identicFilter)));
+  const identicFilter = filter.toLowerCase();
+  const filteredContacts = contacts.filter(({ name }) =>
+    name.toLowerCase().includes(identicFilter)
+  );
 
-    return (
-      <>
-        <Section title="PhoneBook">
-          <Container>
-            <ContactForm onSubmit={this.handleSubmitForm} />
-          </Container>
-        </Section>
-        <Section title="Contacts">
-          <Container>
-            {contacts.length ?
+  return (
+    <>
+      <Section title="PhoneBook">
+        <Container>
+          <ContactForm onSubmit={handleSubmitForm} />
+        </Container>
+      </Section>
+      <Section title="Contacts">
+        <Container>
+          {contacts.length ? (
             <>
-            <Filter
-            filter={filter}
-            onFilterHandle={this.handleFilterInput}
-          />
-          <ContactsList contacts={filter ? filteredContacts: contacts} filter={identicFilter} onDeleteContact={this.handleDeleteContact} />
+              <Filter filter={filter} onFilterHandle={handleFilterInput} />
+              <ContactsList
+                contacts={filter ? filteredContacts : contacts}
+                filter={identicFilter}
+                onDeleteContact={handleDeleteContact}
+              />
             </>
-            : <div>There are no contacts here=( Please add a new contact.</div>}
-          </Container>
-        </Section>
-        <ToastContainer position='top-right' autoClose={3000}/>
-      </>
-    );
-  }
+          ) : (
+            <div>There are no contacts here=( Please add a new contact.</div>
+          )}
+        </Container>
+      </Section>
+      <ToastContainer position="top-right" autoClose={3000} />
+    </>
+  );
 }
