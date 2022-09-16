@@ -34,10 +34,6 @@ export function App() {
       return;
     }
 
-    if (!LOCALE_STORAGE_KEY) {
-      localStorage.setItem(LOCALE_STORAGE_KEY, JSON.stringify(newContact));
-    }
-
     setContacts(prev => {
       return [...prev, newContact];
     });
